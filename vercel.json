@@ -11,7 +11,7 @@
     "routes":[
         {
             "src":"/.*",
-            "dest":"/Unite_backend/server.js"
+            "dest":"server.js"
         }
     ]
 }
