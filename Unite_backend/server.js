@@ -5,15 +5,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
+const dotenv = require("dotenv");
 const app = express()
 const port = process.env.PORT || 8000;
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoute")
 const socket = require("socket.io");
 const {MONGOURL} = require('../config/keys')
+const path = require("path");
 //app config
 
+dotenv.config();
 
 
 //middleware
@@ -25,6 +27,7 @@ app.use("/api/messages", messageRoutes);
 
 // WdcBCDrQeM8Ucq6Z
 //Db configure
+
 
 mongoose.connect(MONGOURL, {
 
@@ -45,14 +48,21 @@ db.once('open', () => {
 
 
 //deploy code starts
+const dir_ = path.basename(path.dirname("server.js"));
 
-if (process.env.NODE_ENV == 'production') {
-    const path = require('path')
-    app.get('/', (req, res) => {
-        app.use(express.static(path.resolve(__dirname, 'unite_chat_app','build')))
-        res.sendFile(path.resolve(__dirname, 'unite_chat_app','build', 'index.html'))
+if(process.env.NODE_ENV=='production'){
+    app.use(express.static(path.join(dir_, 'unite_chat_app','build')));
 
-    })
+    app.get('/', function (req, res) {
+        res.sendFile(path.join(dir_,'unite_char_app', 'build', 'index.html'));
+    });
+} 
+else{
+    app.use(express.static(path.join(dir_, 'unite_chat_app','build')));
+
+    app.get('/', function (req, res) {
+        res.sendFile(path.join(dir_,'unite_char_app', 'build', 'index.html'));
+    });
 }
 
 //deploy code ends
