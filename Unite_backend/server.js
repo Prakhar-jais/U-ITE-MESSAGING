@@ -1,18 +1,18 @@
 //importing 
 
 
-
+const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const dotenv = require("dotenv");
+
 const app = express()
 const port = process.env.PORT || 8000;
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoute")
 const socket = require("socket.io");
 const {MONGOURL} = require('../config/keys')
-const path = require("path");
+
 //app config
 
 dotenv.config();
@@ -29,7 +29,7 @@ app.use("/api/messages", messageRoutes);
 //Db configure
 
 
-mongoose.connect(MONGOURL, {
+mongoose.connect(process.env.MONGOURL, {
 
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -48,9 +48,12 @@ db.once('open', () => {
 
 
 //deploy code starts
+const path = require("path");
 const dir_ = path.basename(path.dirname("server.js"));
-
-if(process.env.NODE_ENV=='production'){
+const {resolve} = require("path");
+const { DEFAULT_MIN_VERSION } = require("tls");
+const abs_dir = resolve(dir_);
+if(process.env.NODE_ENV==='production'){
     app.use(express.static(path.join(dir_, 'unite_chat_app','build')));
 
     app.get('/', function (req, res) {
@@ -58,11 +61,11 @@ if(process.env.NODE_ENV=='production'){
     });
 } 
 else{
-    app.use(express.static(path.join(dir_, 'unite_chat_app','build')));
+    // app.use(express.static(path.join(dir_, 'unite_chat_app','build')));
 
-    app.get('/', function (req, res) {
-        res.sendFile(path.join(dir_,'unite_char_app', 'build', 'index.html'));
-    });
+    // app.get('/', function (req, res) {
+    //     res.sendFile(path.join(dir_,'unite_char_app', 'build', 'index.html'));
+    // });
 }
 
 //deploy code ends
